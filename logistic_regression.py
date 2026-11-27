@@ -7,13 +7,11 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "dataset", "Crop_recommendation.csv")
-MODELS_DIR = os.path.join(BASE_DIR, "models")
-os.makedirs(MODELS_DIR, exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "Crop_recommendation.csv")
+MODEL_PATH = os.path.join(BASE_DIR, "crop_model.pkl")
 
 df = pd.read_csv(DATA_PATH)
-print("Dataset Loaded Successfully")
 
 X = df[["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]]
 y = df["label"]
@@ -27,13 +25,9 @@ model = Pipeline([
     ("classifier", LogisticRegression(max_iter=1000, random_state=42))
 ])
 
-print("Training Logistic Regression Model...")
 model.fit(X_train, y_train)
+accuracy = accuracy_score(y_test, model.predict(X_test))
+print(f"Model trained successfully! Accuracy: {accuracy * 100:.2f}%")
 
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {accuracy * 100:.2f}%")
-
-joblib.dump(model, os.path.join(MODELS_DIR, "logistic_model.pkl"))
-joblib.dump(model, os.path.join(MODELS_DIR, "crop_model.pkl"))
-print("Models Saved Successfully to models/logistic_model.pkl and models/crop_model.pkl")
+joblib.dump(model, MODEL_PATH)
+print(f"Saved model to {MODEL_PATH}")
