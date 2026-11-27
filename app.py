@@ -4,23 +4,15 @@ import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request
 
-# ==========================================================
-# Backend Initialization
-# ==========================================================
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "crop_model.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "crop_model.pkl")
 
 model = joblib.load(MODEL_PATH)
 
-app = Flask(__name__, template_folder="HTML pages")
+app = Flask(__name__, template_folder=BASE_DIR)
 
 FEATURE_COLUMNS = ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]
 
-
-# ==========================================================
-# Route Definitions
-# ==========================================================
 
 @app.route("/")
 def home():
@@ -36,10 +28,6 @@ def about():
 def findyourcrop():
     return render_template("find_your_crop.html")
 
-
-# ==========================================================
-# Crop Prediction
-# ==========================================================
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -78,10 +66,6 @@ def predict():
             prediction_text="Error: Please enter valid numeric values for all fields."
         )
 
-
-# ==========================================================
-# Main Function
-# ==========================================================
 
 if __name__ == "__main__":
     app.run(debug=True)
